@@ -125,19 +125,14 @@ dSet %>%
   filter(curso<=2022) %>% 
   group_by(curso) %>% 
   summarize(PBAU.aptos = sum(PBAU.aptos),
-            oferta = sum(oferta, na.rm=TRUE)/2,
+            oferta = sum(oferta, na.rm=TRUE),
             .groups="keep") %>% 
-  filter(curso<=2022) %>% 
   ggplot( aes(x=curso)) +
   geom_line( aes(y=oferta), color="green", size=1, group=1 ) +
   geom_point( aes(y=oferta), color="green", size=2 ) +
   geom_line( aes(y=PBAU.aptos), color="black", size=1, group=1 ) +
   geom_point( aes(y=PBAU.aptos), color="black", size=2 ) +
-#  coord_cartesian( ylim = c(0, 300000) ) +
-#  coord_cartesian( ylim = c(0, 5000) ) +
-  facet_wrap(facets = vars("ccaa"))
-  # Definim l'escala de l'eix y
-#  scale_y_continuous( breaks = seq( 0, 300000, by=50000 ) )
+  coord_cartesian( ylim = c(0, 300000) ) 
 
 ```
 
