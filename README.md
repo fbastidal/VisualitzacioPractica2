@@ -27,6 +27,10 @@ La presentació s'ha centrat en l'evolució històrica de totes les comunitats a
   * `/R/ETL.Rmd`: Fitxer font en R que llegeix les dades fonts, les neteja, fusiona i guarda en el fitxer `DataSet.txt`
   * `/Project/menu.html`: Pàgina HTML que fa la presentació de les dades fent servir gràfics construits en Flourish Studio
 
+## Acceso a la presentación en línia:
+
+* [Presentación en línia](https://fbastidal.github.io/VisualitzacioPractica2/Project/)
+
 ## Vídeo de presentació
 
 Enllaç al vídeo de presentació de la pràctica:
