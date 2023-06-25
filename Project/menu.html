@@ -1,0 +1,273 @@
+<html>
+
+<head>
+<style type="text/css">
+.inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+}
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-linear navigation</title>
+    <script>
+    function cargarPaginas(urlBarras, urlMapa) {
+      var iframe1 = document.getElementById('Barras');
+      var iframe2 = document.getElementById('Mapa');
+      iframe1.src = urlBarras;
+      iframe2.src = urlMapa;
+    }
+    function onLoad() {
+      cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-0', 
+      'https://flo.uri.sh/story/1960662/embed#slide-0');
+      localStorage.setItem('boton', 'home');
+    }
+    function normal(boton) {
+      var myButton = document.getElementById(boton);
+      myButton.style.backgroundColor = "white";
+      myButton.style.color = "#000000";
+    }
+    function pulsa(boton) {
+      var myButton = document.getElementById(boton);
+      normal("2015");
+      normal("2016");
+      normal("2017");
+      normal("2018");
+      normal("2019");
+      normal("2020");
+      normal("2021");
+      normal("2022");
+      normal("futur");
+      myButton.style.backgroundColor = "#000000";
+      myButton.style.color = "white";
+      localStorage.setItem('boton', boton);
+
+      switch (boton) {
+      case "2015":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-1',
+                      'https://flo.uri.sh/story/1960662/embed#slide-1');
+        break;
+      case "2016":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-2',
+                      'https://flo.uri.sh/story/1960662/embed#slide-2');
+        break;
+      case "2017":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-3',
+                      'https://flo.uri.sh/story/1960662/embed#slide-3');
+        break;
+      case "2018":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-4',
+                      'https://flo.uri.sh/story/1960662/embed#slide-4');
+        break;
+      case "2019":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-5',
+                      'https://flo.uri.sh/story/1960662/embed#slide-5');
+        break;
+      case "2020":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-6',
+                      'https://flo.uri.sh/story/1960662/embed#slide-6');
+        break;
+      case "2021":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-7',
+                      'https://flo.uri.sh/story/1960662/embed#slide-7');
+        break;
+      case "2022":
+        cargarPaginas('https://flo.uri.sh/story/1960128/embed#slide-8',
+                      'https://flo.uri.sh/story/1960662/embed#slide-8');
+        break;
+      case "futur":
+        cargarPaginas('https://flo.uri.sh/story/1960771/embed#slide-0',
+                      'https://flo.uri.sh/story/1959994/embed#slide-0');
+        break;
+      }
+    }
+    function next() {
+      var boton = localStorage.getItem('boton');
+      switch (boton) {
+      case "home":
+        pulsa('2015');
+        break;
+      case "2015":
+        pulsa('2016');
+        break;
+      case "2016":
+        pulsa('2017');
+        break;
+      case "2017":
+        pulsa('2018');
+        break;
+      case "2018":
+        pulsa('2019');
+        break;
+      case "2019":
+        pulsa('2020');
+        break;
+      case "2020":
+        pulsa('2021');
+        break;
+      case "2021":
+        pulsa('2022');
+        break;
+      case "2022":
+        pulsa('futur');
+        break;
+      case "futur":
+        pulsa('futur');
+        break;
+      }
+    }
+    function previous() {
+      var boton = localStorage.getItem('boton');
+      switch (boton) {
+      case "2015":
+        pulsa('2015');
+        break;
+      case "2016":
+        pulsa('2015');
+        break;
+      case "2017":
+        pulsa('2016');
+        break;
+      case "2018":
+        pulsa('2017');
+        break;
+      case "2019":
+        pulsa('2018');
+        break;
+      case "2020":
+        pulsa('2019');
+        break;
+      case "2021":
+        pulsa('2020');
+        break;
+      case "2022":
+        pulsa('2021');
+        break;
+      case "futur":
+        pulsa('2022');
+        break;
+      }
+    }    </script>
+
+    <style>
+        button{
+            background-color: rgba(0, 0, 0, 0);
+            border-radius: 4px;
+            border-width: 0;
+            color: #333333;
+            cursor: pointer;
+            display: inline-block;
+            font-family: Lato, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 10px;
+            list-style: none;
+            margin: 2px;
+            padding: 10px 12px;
+            text-align: center;
+            transition: all 200ms;
+            vertical-align: baseline;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            }
+        
+        button:hover {
+            background-color: #000000;
+            color: white;
+            }
+    </style>
+</head>
+<body onload="onLoad()">
+
+<div class="main-container">
+
+    <div style="display:flex;flex-wrap:wrap;align-items:center;">
+        <img src="https://img.freepik.com/vector-gratis/ilustracion-sombrero-graduacion_53876-5920.jpg?w=740&t=st=1687623872~exp=1687624472~hmac=561d88d935be3c426edf2938e74a32f4d0649d69d3690e55710f00c60b029284" width="30" alt="Inici" onclick="onLoad()">
+      <button id="2015" onclick="pulsa('2015')">2015</button>
+      <button id="2016" onclick="pulsa('2016')">2016</button>
+      <button id="2017" onclick="pulsa('2017')">2017</button>
+      <button id="2018" onclick="pulsa('2018')">2018</button>
+      <button id="2019" onclick="pulsa('2019')">2019</button>
+      <button id="2020" onclick="pulsa('2020')">2020</button>
+      <button id="2021" onclick="pulsa('2021')">2021</button>
+      <button id="2022" onclick="pulsa('2022')">2022</button>
+      <button id="futur" onclick="pulsa('futur')">Futur</button>
+    </div>
+      <img src="previous.png" onclick="previous()" align="middle">
+      <img src="next.png" onclick="next()" align="middle">
+
+      <table style="width: 100% !important;height: 100%;">
+        <tr>
+          <td style="width: 50%;">
+              <iframe id="Mapa" class="iframe trend" src='' title='Interactive or visual content' class='flourish-embed-iframe' frameborder='0' scrolling='no' style='width:100%;height:500px;' sandbox='allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation'></iframe>
+          </td>
+          <td style="width: 50%;">
+              <iframe id="Barras" class="iframe trend" src='' title='Interactive or visual content' class='flourish-embed-iframe' frameborder='0' scrolling='no' style='width:100%;height:500px;' sandbox='allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation'></iframe>
+          </td>
+        </tr>
+      </table>
+</div>
+    
+</body>
+
+</html>
+

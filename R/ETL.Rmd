@@ -1,0 +1,149 @@
+---
+title: "ETL"
+author: "Francisco Bastida"
+date: "2023-06-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if(!require('readxl')) install.packages('readxl'); library('readxl')
+if(!require('tidyverse')) install.packages('tidyverse'); library('tidyverse')
+
+palabra <- function(s, i) {unlist(strsplit(s, " "))[i]}
+```
+
+## Càrrega de dades
+
+En primer lloc carregam les dades:
+
+```{r carrega}
+dPAU <- read_excel("../Dades/PAU2022.xlsx",
+                   skip=8, 
+                   col_names = c("ccaa", "sexo", "tipo", "2022", "2021", "2020", "2019", "2018",
+                                 "2017","2016","2015"),
+                   n_max=102
+                   ) # Dades PBAU
+
+dPRI <- read_excel( "../Dades/Preinscripcion.xlsx",
+                    sheet="Preinscripción Ámbito",
+                    skip=6,
+                    col_names = c("curso", "ccaa", "universidad", "ambito", "centro.codigo",
+                                  "centro.nombre", "centro.tipo", "estudio.codigo", "estudio.nombre",
+                                  "oferta", "matricula", "matricula.primera", "admitidos",
+                                  "preinscritos.primera", "preinscritos.segunda", "nota.tall",
+                                  "ocupacion", "preferencia", "adecuacion"))
+
+dPRI$oferta <- ifelse( dPRI$oferta == "SL", "", dPRI$oferta )
+dPRI$oferta <- type.convert( dPRI$oferta, as.is=TRUE )
+dPRI$matricula <- type.convert( dPRI$matricula, as.is=TRUE )
+dPRI$matricula.primera <- type.convert( dPRI$matricula.primera, as.is=TRUE )
+
+dPOB <- read_excel( "../Dades/Poblacion.xlsx",
+                    skip=1,
+                    col_names= c("edad", "ccaa", "sexo", "Periodo", "Total"))
+
+```
+
+
+# Calculo de acumulados por ccaa y año
+
+```{r calculos}
+
+tPAU <- dPAU %>% 
+  pivot_longer(cols=starts_with("2"), names_to="curs", values_to="Valor" ) %>% 
+  pivot_wider(names_from="tipo", values_from="Valor") %>% 
+  mutate(ccaa=ifelse(ccaa=="Asturias (Principado de)", "Asturias, Principado de", 
+              ifelse(ccaa=="Balears (Illes)", "Balears, Illes", 
+              ifelse(ccaa=="Castilla-La Mancha", "Castilla - La Mancha", 
+              ifelse(ccaa=="Madrid (Comunidad de)", "Madrid, Comunidad de", 
+              ifelse(ccaa=="Murcia (Región de)", "Murcia, Región de", 
+              ifelse(ccaa=="Navarra (Comunidad Foral de)", "Navarra, Comunidad Foral de", 
+              ifelse(ccaa=="Rioja (La)", "Rioja, La", ccaa))))))))
+
+tPRI <- dPRI %>% 
+  group_by( curso, ccaa ) %>% 
+  summarize( oferta = sum(oferta),
+             matricula = round(sum(matricula)),
+             .groups = "keep") %>% 
+  mutate( curso=substr(curso, start=1, stop=4) ) %>% 
+  mutate(ccaa=ifelse(ccaa=="Asturias (Principado de)", "Asturias, Principado de", 
+              ifelse(ccaa=="Balears (Illes)", "Balears, Illes", 
+              ifelse(ccaa=="Castilla-La Mancha", "Castilla - La Mancha", 
+              ifelse(ccaa=="Madrid (Comunidad de)", "Madrid, Comunidad de", 
+              ifelse(ccaa=="Murcia (Región de)", "Murcia, Región de", 
+              ifelse(ccaa=="Navarra (Comunidad Foral de)", "Navarra, Comunidad Foral de", 
+              ifelse(ccaa=="Rioja (La)", "Rioja, La", ccaa))))))))
+
+tPOB <- dPOB %>% 
+  filter(edad!="Total") %>% 
+  filter(ccaa!="Total Nacional") %>% 
+  filter(substr( ccaa, start=4, stop=1000)!="Ceuta") %>% 
+  filter(substr( ccaa, start=4, stop=1000)!="Melilla") %>% 
+  filter(sexo!="Ambos sexos") %>% 
+  filter(substr(Periodo,start=1,stop=10)=="1 de enero")
+tPOB$edad <- sapply( strsplit( tPOB$edad, " "), FUN=head, 1 )
+tPOB$edad <- type.convert( tPOB$edad, as.is=TRUE )
+tPOB$curso <- sapply( strsplit( tPOB$Periodo, " "), FUN=tail, 1 )
+tPOB <- tPOB %>% 
+  filter(edad==18 | ( edad<=18 & curso==2022) ) %>% 
+  filter(curso>=2015) %>% 
+  mutate( ccaa = substr( ccaa, start=4, stop=1000),
+          sexo = sexo,
+          curso = ifelse( edad==18, curso, 2040-edad),
+          poblacion = round(Total),
+          .keep = "none")
+```
+
+
+```{r}
+
+dSet <- tPOB %>% 
+  left_join(tPAU, by=c("ccaa", "sexo", "curso"="curs")) %>% 
+  rename(PBAU.matricula=Matriculados,
+         PBAU.presentados=Presentados,
+         PBAU.aptos=Aprobados) %>% 
+  left_join(tPRI, by=c("ccaa", "curso")) %>% 
+  mutate(PBAU.ratio=PBAU.aptos/poblacion) %>% 
+  group_by( ccaa, curso) %>% 
+  summarise(poblacion=sum(poblacion),
+            PBAU.aptos=sum(PBAU.aptos),
+            oferta=max(oferta),
+            .groups = "keep") %>% 
+  mutate(ratio=PBAU.aptos/poblacion) %>% 
+  filter(curso<=2022) %>% 
+  mutate(dif=oferta-PBAU.aptos)
+
+
+```
+
+
+```{r fig.width=10}
+
+dSet %>%
+  filter(curso<=2022) %>% 
+  group_by(curso) %>% 
+  summarize(PBAU.aptos = sum(PBAU.aptos),
+            oferta = sum(oferta, na.rm=TRUE)/2,
+            .groups="keep") %>% 
+  filter(curso<=2022) %>% 
+  ggplot( aes(x=curso)) +
+  geom_line( aes(y=oferta), color="green", size=1, group=1 ) +
+  geom_point( aes(y=oferta), color="green", size=2 ) +
+  geom_line( aes(y=PBAU.aptos), color="black", size=1, group=1 ) +
+  geom_point( aes(y=PBAU.aptos), color="black", size=2 ) +
+#  coord_cartesian( ylim = c(0, 300000) ) +
+#  coord_cartesian( ylim = c(0, 5000) ) +
+  facet_wrap(facets = vars("ccaa"))
+  # Definim l'escala de l'eix y
+#  scale_y_continuous( breaks = seq( 0, 300000, by=50000 ) )
+
+```
+
+
+```{r}
+write_tsv(dSet, '../Dades/DataSet.txt')
+
+````
+
