@@ -5,6 +5,9 @@ _Aquest repositori correspon a la pràctica 2 de l'assignatura **Visualització 
 
 # Pràctica 2 - Visualització de dades
 
+# Títol
+Oferta i demanda de places d'estudis universitaris de grau
+
 # Autor
 * Francisco Bastida López - [fbastidal@uoc.edu](fbastidal@uoc.edu)
 
